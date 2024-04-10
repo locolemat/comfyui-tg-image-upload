@@ -2,7 +2,10 @@ const express = require('express');
 const path = require('path');
 const fsp = require('fs').promises;
 const cors = require('cors');
+const multer = require('multer')
 const {logEvent} = require('./middleware/logEvents')
+
+const upload = multer({'dest': __dirname})
 
 PORT = 8100;
 app = express();
@@ -18,12 +21,9 @@ app.use(express.urlencoded({extended: false}))
 
 app.use(express.json())
 
-app.post('/upload_image', (req,res)=>{
-    console.log(req.files)
-    let data = JSON.parse(req.json);
-    let file = data['file']
-    let filename = data['filename']
-    fsp.writeFile(path.join(__dirname, filename, '.png'), Buffer.from(file))
+app.post('/upload_image', upload.single('file'), (req,res)=>{
+    let file = req.file
+    let filename = req.filename
     res.status(200).send(`OK`);
 })
 
