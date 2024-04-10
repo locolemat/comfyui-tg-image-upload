@@ -5,10 +5,16 @@ const cors = require('cors');
 const multer = require('multer')
 const {logEvent} = require('./middleware/logEvents')
 
-const upload = multer({'dest': __dirname})
+const upload_folder = '/home/andy/AI/ComfyUI/input'
+const upload = multer({'dest': upload_folder})
 
 PORT = 8100;
+
+
 app = express();
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(cors())
 
@@ -17,13 +23,13 @@ app.use((req,res,next)=>{
     next()
 })
 
-app.use(express.urlencoded({extended: false}))
-
-app.use(express.json())
-
 app.post('/upload_image', upload.single('file'), (req,res)=>{
     let file = req.file
-    let filename = req.filename
+    let filename = req.file.originalname
+
+    console.log(filename)
+    
+    fsp.rename(path.join(upload_folder, req.file.filename), path.join(upload_folder, filename))
     res.status(200).send(`OK`);
 })
 
