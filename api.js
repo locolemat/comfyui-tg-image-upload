@@ -18,11 +18,13 @@ app.use(express.urlencoded({extended: false}))
 
 app.use(express.json())
 
-app.get('/robokassa_result', (req,res)=>{
-    logEvent(`${req.url}\t${req.json}`);
+app.post('/upload_image', (req,res)=>{
+    console.log(req.files)
     let data = JSON.parse(req.json);
-    let invId = req.json['InvId'];
-    res.status(200).send(`OK${invId}`);
+    let file = data['file']
+    let filename = data['filename']
+    fsp.writeFile(path.join(__dirname, filename, '.png'), Buffer.from(file))
+    res.status(200).send(`OK`);
 })
 
 app.listen(PORT, ()=>{console.log(`Server running on port ${PORT}`)});
